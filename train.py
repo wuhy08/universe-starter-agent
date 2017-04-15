@@ -83,15 +83,16 @@ def create_commands(session, num_workers, remotes, env_id, logdir, shell='bash',
         notes += ["Use `tail -f {}/*.out` to watch process output".format(logdir)]
     notes += ["Point your browser to http://localhost:12345 to see Tensorboard"]
 
+    sudo_str = "sudo" if sudo else ""
     if mode == 'tmux':
         cmds += [
-        "kill $( lsof -i:12345 -t ) > /dev/null 2>&1",  # kill any process using tensorboard's port
-        "kill $( lsof -i:12222-{} -t ) > /dev/null 2>&1".format(num_workers+12222), # kill any processes using ps / worker ports
-        "tmux kill-session -t {}".format(session),
-        "tmux new-session -s {} -n {} -d {}".format(session, windows[0], shell)
+        "{} kill $( lsof -i:12345 -t ) > /dev/null 2>&1".format(sudo_str),  # kill any process using tensorboard's port
+        "{} kill $( lsof -i:12222-{} -t ) > /dev/null 2>&1".format(sudo_str, num_workers+12222), # kill any processes using ps / worker ports
+        "{} tmux kill-session -t {}".format(sudo_str, session),
+        "{} tmux new-session -s {} -n {} -d {}".format(sudo_str, session, windows[0], shell)
         ]
         for w in windows[1:]:
-            cmds += ["tmux new-window -t {} -n {} {}".format(session, w, shell)]
+            cmds += ["{} tmux new-window -t {} -n {} {}".format(sudo_str, session, w, shell)]
         cmds += ["sleep 1"]
     for window, cmd in cmds_map:
         cmds += [cmd]
