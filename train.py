@@ -60,11 +60,11 @@ def create_commands(session, num_workers, remotes, env_id, logdir, shell='bash',
     cmds_map = [new_cmd(session, "ps", base_cmd + ["--job-name", "ps"], mode, logdir, shell, sudo=sudo)]
     for i in range(num_workers):
         cmds_map += [new_cmd(session,
-            "w-%d" % i, base_cmd + ["--job-name", "worker", "--task", str(i), "--remotes", remotes[i]], mode, logdir, shell, , sudo=sudo)]
+            "w-%d" % i, base_cmd + ["--job-name", "worker", "--task", str(i), "--remotes", remotes[i]], mode, logdir, shell, sudo=sudo)]
 
-    cmds_map += [new_cmd(session, "tb", ["tensorboard", "--logdir", logdir, "--port", "12345"], mode, logdir, shell, , sudo=sudo)]
+    cmds_map += [new_cmd(session, "tb", ["tensorboard", "--logdir", logdir, "--port", "12345"], mode, logdir, shell, sudo=sudo)]
     if mode == 'tmux':
-        cmds_map += [new_cmd(session, "htop", ["htop"], mode, logdir, shell, , sudo=sudo)]
+        cmds_map += [new_cmd(session, "htop", ["htop"], mode, logdir, shell, sudo=sudo)]
 
     windows = [v[0] for v in cmds_map]
 
