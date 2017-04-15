@@ -26,15 +26,16 @@ parser.add_argument('--sudo', action='store_true',
                     help="Give sudo access in tmux")
 
 
-def new_cmd(session, name, cmd, mode, logdir, shell):
+def new_cmd(session, name, cmd, mode, logdir, shell, sudo=False):
     if isinstance(cmd, (list, tuple)):
         cmd = " ".join(shlex_quote(str(v)) for v in cmd)
+    sudo_str = "sudo" if sudo else ""
     if mode == 'tmux':
-        return name, "tmux send-keys -t {}:{} {} Enter".format(session, name, shlex_quote(cmd))
+        return name, "{} tmux send-keys -t {}:{} {} Enter".format(sudo_str, session, name, shlex_quote(cmd))
     elif mode == 'child':
-        return name, "{} >{}/{}.{}.out 2>&1 & echo kill $! >>{}/kill.sh".format(cmd, logdir, session, name, logdir)
+        return name, "{} {} >{}/{}.{}.out 2>&1 & echo kill $! >>{}/kill.sh".format(sudo_str, cmd, logdir, session, name, logdir)
     elif mode == 'nohup':
-        return name, "nohup {} -c {} >{}/{}.{}.out 2>&1 & echo kill $! >>{}/kill.sh".format(shell, shlex_quote(cmd), logdir, session, name, logdir)
+        return name, "{} nohup {} -c {} >{}/{}.{}.out 2>&1 & echo kill $! >>{}/kill.sh".format(sudo_str, shell, shlex_quote(cmd), logdir, session, name, logdir)
 
 
 def create_commands(session, num_workers, remotes, env_id, logdir, shell='bash', mode='tmux', visualise=False, sudo=False):
@@ -56,14 +57,14 @@ def create_commands(session, num_workers, remotes, env_id, logdir, shell='bash',
         remotes = remotes.split(',')
         assert len(remotes) == num_workers
 
-    cmds_map = [new_cmd(session, "ps", base_cmd + ["--job-name", "ps"], mode, logdir, shell)]
+    cmds_map = [new_cmd(session, "ps", base_cmd + ["--job-name", "ps"], mode, logdir, shell, sudo=sudo)]
     for i in range(num_workers):
         cmds_map += [new_cmd(session,
-            "w-%d" % i, base_cmd + ["--job-name", "worker", "--task", str(i), "--remotes", remotes[i]], mode, logdir, shell)]
+            "w-%d" % i, base_cmd + ["--job-name", "worker", "--task", str(i), "--remotes", remotes[i]], mode, logdir, shell, , sudo=sudo)]
 
-    cmds_map += [new_cmd(session, "tb", ["tensorboard", "--logdir", logdir, "--port", "12345"], mode, logdir, shell)]
+    cmds_map += [new_cmd(session, "tb", ["tensorboard", "--logdir", logdir, "--port", "12345"], mode, logdir, shell, , sudo=sudo)]
     if mode == 'tmux':
-        cmds_map += [new_cmd(session, "htop", ["htop"], mode, logdir, shell)]
+        cmds_map += [new_cmd(session, "htop", ["htop"], mode, logdir, shell, , sudo=sudo)]
 
     windows = [v[0] for v in cmds_map]
 
