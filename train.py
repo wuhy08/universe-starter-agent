@@ -25,6 +25,8 @@ parser.add_argument('--visualise', action='store_true',
 parser.add_argument('--sudo', action='store_true',
                     help="Give sudo access in tmux")
 
+parser.add_argument('--print', action='store_true',
+                    help="only print to file")
 
 def new_cmd(session, name, cmd, mode, logdir, shell, sudo=False):
     if isinstance(cmd, (list, tuple)):
@@ -109,12 +111,18 @@ def run():
         print("Executing the following commands:")
     print("\n".join(cmds))
     print("")
-    if not args.dry_run:
-        if args.mode == "tmux":
-            os.environ["TMUX"] = ""
-        os.system("\n".join(cmds))
+    if args.print:
+        print("only print the command line above to file")
+        with open('cmds', 'w') as f:
+            for cmd in cmds:
+                f.write('{}\n'.format(cmd))  # python will convert \n to os.linesep
+    else
+        if not args.dry_run:
+            if args.mode == "tmux":
+                os.environ["TMUX"] = ""
+            os.system("\n".join(cmds))
     print('\n'.join(notes))
 
 
 if __name__ == "__main__":
-    run()
+    run(True)
