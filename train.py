@@ -42,6 +42,7 @@ def new_cmd(session, name, cmd, mode, logdir, shell, sudo=False):
 
 def create_commands(session, num_workers, remotes, env_id, logdir, shell='bash', mode='tmux', visualise=False, sudo=False):
     # for launching the TF workers and for launching tensorboard
+    sudo_str = "sudo" if sudo else ""
     base_cmd = ['sudo'] if sudo else []
     base_cmd += [
         'CUDA_VISIBLE_DEVICES=',
@@ -72,8 +73,8 @@ def create_commands(session, num_workers, remotes, env_id, logdir, shell='bash',
 
     notes = []
     cmds = [
-        "mkdir -p {}".format(logdir),
-        "echo {} {} > {}/cmd.sh".format(sys.executable, ' '.join([shlex_quote(arg) for arg in sys.argv if arg != '-n']), logdir),
+        "{} mkdir -p {}".format(sudo_str,logdir),
+        "{} echo {} {} > {}/cmd.sh".format(sudo_str, sys.executable, ' '.join([shlex_quote(arg) for arg in sys.argv if arg != '-n']), logdir),
     ]
     if mode == 'nohup' or mode == 'child':
         cmds += ["echo '#!/bin/sh' >{}/kill.sh".format(logdir)]
