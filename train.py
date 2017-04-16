@@ -116,7 +116,7 @@ def run():
         with open('cmds', 'w') as f:
             for cmd in cmds:
                 f.write('{}\n'.format(cmd))  # python will convert \n to os.linesep
-    else
+    else:
         if not args.dry_run:
             if args.mode == "tmux":
                 os.environ["TMUX"] = ""
