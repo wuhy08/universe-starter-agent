@@ -10,9 +10,11 @@ from universe.wrappers import BlockingReset, GymCoreAction, EpisodeID, Unvectori
 from universe import spaces as vnc_spaces
 from universe.spaces.vnc_event import keycode
 import time
+import os
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-universe.configure_logging()
+pid = os.getpid()
+universe.configure_logging('/dev/shm/universe-{}.log'.format(pid))
 
 def create_env(env_id, client_id, remotes, **kwargs):
     spec = gym.spec(env_id)
