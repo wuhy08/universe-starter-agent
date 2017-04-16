@@ -33,7 +33,7 @@ def new_cmd(session, name, cmd, mode, logdir, shell, sudo=False):
         cmd = " ".join(shlex_quote(str(v)) for v in cmd)
     sudo_str = "sudo" if sudo else ""
     if mode == 'tmux':
-        return name, "{} tmux send-keys -t {}:{} {} Enter".format(sudo_str, session, name, shlex_quote(cmd))
+        return name, "tmux send-keys -t {}:{} {} Enter".format(session, name, shlex_quote(cmd))
     elif mode == 'child':
         return name, "{} {} >{}/{}.{}.out 2>&1 & echo kill $! >>{}/kill.sh".format(sudo_str, cmd, logdir, session, name, logdir)
     elif mode == 'nohup':
