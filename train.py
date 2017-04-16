@@ -25,7 +25,7 @@ parser.add_argument('--visualise', action='store_true',
 parser.add_argument('--sudo', action='store_true',
                     help="Give sudo access in tmux")
 
-parser.add_argument('--print', action='store_true',
+parser.add_argument('--prints', action='store_true',
                     help="only print to file")
 
 def new_cmd(session, name, cmd, mode, logdir, shell, sudo=False):
@@ -111,7 +111,7 @@ def run():
         print("Executing the following commands:")
     print("\n".join(cmds))
     print("")
-    if args.print:
+    if args.prints:
         print("only print the command line above to file")
         with open('cmds', 'w') as f:
             for cmd in cmds:
@@ -125,4 +125,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run(True)
+    run()
